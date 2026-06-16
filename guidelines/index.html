@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en" class="transition" :class="{ 'dark': $store.theme.isDark }" x-data>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description"
+    content="Read about Octovel's Contribution Guidelines to understand our branching, commit, and code review processes.">
+  <title>Contribution Guidelines | Octovel</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@4.6.0/fonts/remixicon.css" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: {
+              50: '#fafaf9',
+              100: '#f5f5f4',
+              200: '#e7e5e4',
+              300: '#d6d3d1',
+              400: '#a8a29e',
+              500: '#78716c',
+              600: '#57534e',
+              700: '#44403c',
+              800: '#292524',
+              900: '#1c1917',
+              950: '#0c0a09',
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    [x-cloak] {
+      display: none !important;
+    }
+
+    ::-webkit-scrollbar {
+      display: none;
+    }
+
+    html {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+  <script>
+    if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs/dist/cdn.min.js"></script>
+  <script>
+    document.addEventListener('alpine:init', () => {
+      Alpine.store('theme', {
+        isDark: localStorage.getItem('theme') === 'dark' ||
+          (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches),
+        toggle() {
+          this.isDark = !this.isDark;
+          localStorage.setItem('theme', this.isDark ? 'dark' : 'light');
+        }
+      });
+    });
+  </script>
+</head>
+
+<body class="transition antialiased bg-primary-50 dark:bg-primary-950 dark:text-primary-200 text-primary-950">
+  <div class="mx-auto max-w-2xl px-4 sm:px-6 pb-16 sm:pb-20 pt-0">
+    <header id="main-header"
+      class="sticky top-0 z-50 flex items-center justify-between py-6 sm:py-8 bg-transparent transition-all duration-300 px-2 rounded-b-2xl mb-8">
+      <a href="/" class="flex items-center gap-4 sm:gap-5 hover:opacity-80 transition-opacity">
+        <img class="w-11 h-11 object-contain dark:invert" src="/logo.png" alt="Octovel logo" />
+        <div>
+          <h1 class="font-medium tracking-tight text-xl sm:text-2xl text-primary-950 dark:text-white leading-tight">
+            Octovel</h1>
+        </div>
+      </a>
+      <div class="flex items-center gap-2">
+        <a href="mailto:contact@octovel.org">
+          <button
+            class="inline-flex items-center justify-center rounded-full transition dark:hover:bg-primary-400/10 dark:text-primary-200 focus-visible:ring-2 focus:outline-none h-10 w-10 hover:bg-primary-500/10 ring-primary-950 text-primary-950 shrink-0"
+            type="button">
+            <i class="ri-mail-open-fill text-xl"></i>
+          </button>
+        </a>
+
+        <button
+          class="inline-flex items-center justify-center rounded-full transition dark:hover:bg-primary-400/10 dark:text-primary-200 focus-visible:ring-2 focus:outline-none h-10 w-10 hover:bg-primary-500/10 ring-primary-950 text-primary-950 shrink-0"
+          type="button" @click="$store.theme.toggle()">
+          <span class="sr-only">Toggle theme mode</span>
+          <i class="ri-sun-line text-xl" :class="{ 'hidden': !$store.theme.isDark }" x-cloak></i>
+          <i class="ri-moon-line text-xl" :class="{ 'hidden': $store.theme.isDark }" x-cloak></i>
+        </button>
+      </div>
+    </header>
+
+    <div id="page-content" class="transition-all duration-300">
+      <div class="mb-8 ml-2">
+        <a href="/" class="inline-flex items-center gap-2 text-sm text-primary-600 dark:text-primary-400">
+          <i class="ri-arrow-left-line"></i>
+          <span>Back to Home</span>
+        </a>
+      </div>
+
+      <div class="mb-10 ml-2">
+        <h1 class="font-medium tracking-tight text-3xl sm:text-4xl text-primary-950 dark:text-white mb-2">Contribution
+          Guidelines</h1>
+        <p class="text-xs dark:text-primary-200/50 text-primary-950/50">Effective: March 28th, 2026</p>
+      </div>
+
+      <div class="flex flex-col gap-10 ml-2">
+        <p class="text-base font-medium dark:text-primary-200 text-primary-950">
+          Applies to: All Octovel GitHub repositories
+        </p>
+
+        <div>
+          <h2 class="font-medium tracking-tight text-xl sm:text-2xl mb-4 text-primary-950 dark:text-white">Introduction
+          </h2>
+          <p class="text-base dark:text-primary-200/70 text-primary-950/70 leading-relaxed mb-4">
+            Thank you for your interest in contributing to Octovel. Whether you are fixing a bug, proposing a new
+            feature, improving documentation, or sharing feedback, your contribution is valued and appreciated.
+          </p>
+          <p class="text-base dark:text-primary-200/70 text-primary-950/70 leading-relaxed mb-4">
+            These guidelines are designed to make the contribution process as clear and consistent as possible across
+            all Octovel repositories. Please read them carefully before submitting any contribution.
+          </p>
+          <p class="text-base dark:text-primary-200/70 text-primary-950/70 leading-relaxed">
+            By contributing to an Octovel project, you agree to abide by our <a
+              href="//community.octovel.org/guidelines"
+              class="text-primary-600 dark:text-primary-400 hover:underline">Community Guidelines</a> and <a
+              href="//developer.octovel.org/standards"
+              class="text-primary-600 dark:text-primary-400 hover:underline">Developer Standards</a>.
+          </p>
+        </div>
+
+        <div class="flex flex-col gap-8">
+          <div>
+            <h2 class="font-medium tracking-tight text-xl sm:text-2xl mb-4 text-primary-950 dark:text-white">1. Getting
+              Started</h2>
+          </div>
+
+          <div>
+            <h3 class="font-semibold text-base text-primary-950 dark:text-white mb-3">1.1 Prerequisites</h3>
+            <p class="text-base dark:text-primary-200/70 text-primary-950/70 mb-4">Before contributing, ensure you are
+              familiar with:</p>
+            <ul class="list-disc pl-5 text-sm dark:text-primary-200/60 text-primary-950/60 space-y-2">
+              <li>The purpose and scope of the repository you intend to contribute to. Read its <code
+                  class="text-primary-950 dark:text-primary-200 bg-primary-500/10 dark:bg-primary-400/10 px-1.5 py-0.5 rounded text-xs">README.md</code>
+                thoroughly.</li>
+              <li>The technology stack used by the project (TypeScript/JavaScript, Go, or Python depending on the
+                repository).</li>
+              <li>Our <a href="//developer.octovel.org/standards"
+                  class="text-primary-600 dark:text-primary-400 hover:underline">Developer
+                  Standards</a>, which define the code quality, formatting, and architectural expectations that apply
+                across all Octovel projects.</li>
+            </ul>
+          </div>
+
+          <div>
+            <h3 class="font-semibold text-base text-primary-950 dark:text-white mb-3">1.2 Setting Up Your Environment
+            </h3>
+            <ol class="list-decimal pl-5 text-sm dark:text-primary-200/60 text-primary-950/60 space-y-4">
+              <li>
+                <p class="font-medium mb-1"><strong>Fork</strong> the repository to your own GitHub account.</p>
+              </li>
+              <li>
+                <p class="font-medium mb-2"><strong>Clone</strong> your fork locally:</p>
+                <div class="relative bg-primary-900 p-5 rounded-3xl text-sm text-primary-100 group">
+                  <button
+                    class="copy-btn absolute top-4 right-4 text-xs transition rounded-full px-3 py-1 bg-white/10 hover:bg-white/20 text-primary-300 flex items-center gap-1.5">
+                    <i class="ri-file-copy-line"></i>
+                    Copy
+                  </button>
+                  <pre class="overflow-x-auto"><code class="language-bash">git clone https://github.com/&lt;your-username&gt;/&lt;repository&gt;.git
+cd &lt;repository&gt;</code></pre>
+                </div>
+              </li>
+              <li>
+                <p class="font-medium"><strong>Install dependencies</strong> as described in the repository's <code
+                    class="text-primary-950 dark:text-primary-200 bg-primary-500/10 dark:bg-primary-400/10 px-1.5 py-0.5 rounded text-xs">README.md</code>
+                  or <code
+                    class="text-primary-950 dark:text-primary-200 bg-primary-500/10 dark:bg-primary-400/10 px-1.5 py-0.5 rounded text-xs">CONTRIBUTING.md</code>
+                  file.</p>
+              </li>
+              <li>
+                <p class="font-medium"><strong>Create a branch</strong> for your work.</p>
+              </li>
+              <li>
+                <p class="font-medium">Verify that existing tests pass before making any changes.</p>
+              </li>
+            </ol>
+          </div>
+
+          <div>
+            <h3 class="font-semibold text-base text-primary-950 dark:text-white mb-3">1.3 First-Time Contributors</h3>
+            <p class="text-base dark:text-primary-200/70 text-primary-950/70 mb-4">
+              If this is your first contribution to Octovel, we recommend starting with issues labeled <code
+                class="text-primary-950 dark:text-primary-200 bg-primary-500/10 dark:bg-primary-400/10 px-1.5 py-0.5 rounded text-xs">Help Wanted</code>.
+              These are intentionally scoped to be approachable and well-documented.
+            </p>
+            <p class="text-base dark:text-primary-200/70 text-primary-950/70">
+              Do not hesitate to ask questions in the <a
+                href="https://discord.com/channels/1428773355435200676/1428777389453869289"><span
+                  class="bg-blue-900 rounded-lg inline-flex px-0.5 py-0.5 text-white"><i
+                    class="ri-hashtag"></i>discussion</span></a> channel on Discord or directly on the relevant
+              GitHub issue.
+            </p>
+          </div>
+        </div>
+
+        <div class="flex flex-col gap-8">
+          <div>
+            <h2 class="font-medium tracking-tight text-xl sm:text-2xl mb-4 text-primary-950 dark:text-white">2.
+              Submitting Issues</h2>
+          </div>
+
+          <div>
+            <h3 class="font-semibold text-base text-primary-950 dark:text-white mb-3">2.1 Before Opening an Issue</h3>
+            <p class="text-base dark:text-primary-200/70 text-primary-950/70 mb-4">Before submitting a new issue,
+              please:</p>
+            <ul class="list-disc pl-5 text-sm dark:text-primary-200/60 text-primary-950/60 space-y-2">
+              <li>Search existing issues (open and closed) to avoid duplicates.</li>
+              <li>Verify that the issue is reproducible and not caused by a local configuration problem.</li>
+              <li>Ensure the issue is within the scope of the repository.</li>
+            </ul>
+          </div>
+
+          <div>
+            <h3 class="font-semibold text-base text-primary-950 dark:text-white mb-3">2.2 Bug Reports</h3>
+            <p class="text-base dark:text-primary-200/70 text-primary-950/70 mb-4">
+              A good bug report enables maintainers to reproduce and diagnose the problem efficiently. Include the
+              following:
+            </p>
+            <ul class="list-disc pl-5 text-sm dark:text-primary-200/60 text-primary-950/60 space-y-2">
+              <li><strong>A clear and descriptive title</strong> summarizing the problem.</li>
+              <li><strong>Steps to reproduce</strong> the issue, as concisely as possible.</li>
+              <li><strong>Expected behavior</strong>, what you expected to happen.</li>
+              <li><strong>Actual behavior</strong>, what actually happened.</li>
+              <li><strong>Environment details</strong>, operating system, runtime version, package version, and any
+                other relevant context.</li>
+              <li><strong>Relevant logs or error messages</strong>, formatted as code blocks.</li>
+            </ul>
+            <p class="text-base dark:text-primary-200/70 text-primary-950/70 mt-4">
+              Use the bug report template if one is provided in the repository.
+            </p>
+          </div>
+
+          <div>
+            <h3 class="font-semibold text-base text-primary-950 dark:text-white mb-3">2.3 Feature Requests</h3>
+            <p class="text-base dark:text-primary-200/70 text-primary-950/70 mb-4">When proposing a new feature, please
+              provide:</p>
+            <ul class="list-disc pl-5 text-sm dark:text-primary-200/60 text-primary-950/60 space-y-2">
+              <li><strong>A clear and descriptive title.</strong></li>
+              <li><strong>The problem or limitation</strong> the feature would address.</li>
+              <li><strong>A proposed solution</strong>, even if high-level or preliminary.</li>
+              <li><strong>Any alternatives considered</strong>, and why the proposed solution is preferable.</li>
+            </ul>
+            <p class="text-base dark:text-primary-200/70 text-primary-950/70 mt-4">
+              Feature requests are reviewed by maintainers in the context of the project's roadmap and scope. Not all
+              requests will be accepted, and a response may take time given our volunteer-based structure.
+            </p>
+          </div>
+
+          <div>
+            <h3 class="font-semibold text-base text-primary-950 dark:text-white mb-3">2.4 Issue Etiquette</h3>
+            <ul class="list-disc pl-5 text-sm dark:text-primary-200/60 text-primary-950/60 space-y-2">
+              <li>Keep issues focused on a single concern. Open separate issues for separate problems.</li>
+              <li>Do not use issues for general support questions. Use the <a
+                  href="https://discord.com/channels/1428773355435200676/1428777389453869289"><span
+                    class="bg-blue-900 rounded-lg inline-flex px-0.5 py-0.5 text-white"><i
+                      class="ri-hashtag"></i>discussion</span></a> channel on Discord instead.
+              </li>
+              <li>Avoid adding comments that do not contribute new information (e.g., "+1" or "any update?"). Use GitHub
+                reactions to express agreement.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="flex flex-col gap-8">
+          <div>
+            <h2 class="font-medium tracking-tight text-xl sm:text-2xl mb-4 text-primary-950 dark:text-white">3.
+              Branching & Commit Conventions</h2>
+          </div>
+
+          <div>
+            <h3 class="font-semibold text-base text-primary-950 dark:text-white mb-3">3.1 Branching</h3>
+            <p class="text-base dark:text-primary-200/70 text-primary-950/70 mb-4">
+              All contributions must be made on a dedicated branch. Do not commit directly to <code
+                class="text-primary-950 dark:text-primary-200 bg-primary-500/10 dark:bg-primary-400/10 px-1.5 py-0.5 rounded text-xs">main</code>
+              or any protected branch.
+            </p>
+            <p class="text-base dark:text-primary-200/70 text-primary-950/70 mb-4">Branch names should follow this
+              format:</p>
+
+            <div class="relative bg-primary-900 p-5 rounded-3xl text-sm text-primary-100 group mb-6">
+              <button
+                class="copy-btn absolute top-4 right-4 text-xs transition rounded-full px-3 py-1 bg-white/10 hover:bg-white/20 text-primary-300 flex items-center gap-1.5">
+                <i class="ri-file-copy-line"></i>
+                Copy
+              </button>
+              <pre class="overflow-x-auto"><code>&lt;type&gt;/&lt;short-description&gt;</code></pre>
+            </div>
+
+            <p class="text-base dark:text-primary-200/70 text-primary-950/70 mb-4">Common types:</p>
+
+            <div class="overflow-x-auto my-6">
+              <table class="w-full text-left border-collapse border border-primary-500/10 dark:border-primary-400/10">
+                <thead>
+                  <tr
+                    class="bg-primary-500/5 dark:bg-primary-400/5 border-b border-primary-500/10 dark:border-primary-400/10">
+                    <th class="px-4 py-3 font-medium text-primary-950 dark:text-white text-sm">Type</th>
+                    <th class="px-4 py-3 font-medium text-primary-950 dark:text-white text-sm">Purpose</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-primary-500/10 dark:divide-primary-400/10 text-xs sm:text-sm">
+                  <tr>
+                    <td class="px-4 py-3 font-medium text-primary-950 dark:text-white text-sm">feat</td>
+                    <td class="px-4 py-3 text-sm dark:text-primary-200/70 text-primary-950/70">A new feature</td>
+                  </tr>
+                  <tr>
+                    <td class="px-4 py-3 font-medium text-primary-950 dark:text-white text-sm">fix</td>
+                    <td class="px-4 py-3 text-sm dark:text-primary-200/70 text-primary-950/70">A bug fix</td>
+                  </tr>
+                  <tr>
+                    <td class="px-4 py-3 font-medium text-primary-950 dark:text-white text-sm">docs</td>
+                    <td class="px-4 py-3 text-sm dark:text-primary-200/70 text-primary-950/70">Documentation changes
+                      only</td>
+                  </tr>
+                  <tr>
+                    <td class="px-4 py-3 font-medium text-primary-950 dark:text-white text-sm">refactor</td>
+                    <td class="px-4 py-3 text-sm dark:text-primary-200/70 text-primary-950/70">Code restructuring
+                      without behavior change</td>
+                  </tr>
+                  <tr>
+                    <td class="px-4 py-3 font-medium text-primary-950 dark:text-white text-sm">test</td>
+                    <td class="px-4 py-3 text-sm dark:text-primary-200/70 text-primary-950/70">Adding or updating tests
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="px-4 py-3 font-medium text-primary-950 dark:text-white text-sm">chore</td>
+                    <td class="px-4 py-3 text-sm dark:text-primary-200/70 text-primary-950/70">Maintenance tasks
+                      (dependencies, config, etc.)</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <p class="text-base dark:text-primary-200/70 text-primary-950/70 mb-4"><strong>Examples:</strong></p>
+            <div class="relative bg-primary-900 p-5 rounded-3xl text-sm text-primary-100 group">
+              <button
+                class="copy-btn absolute top-4 right-4 text-xs transition rounded-full px-3 py-1 bg-white/10 hover:bg-white/20 text-primary-300 flex items-center gap-1.5">
+                <i class="ri-file-copy-line"></i>
+                Copy
+              </button>
+              <pre class="overflow-x-auto"><code>feat/user-authentication
+fix/rate-limiter-overflow
+docs/update-readme</code></pre>
+            </div>
+          </div>
+
+          <div>
+            <h3 class="font-semibold text-base text-primary-950 dark:text-white mb-3">3.2 Commit Messages</h3>
+            <p class="text-base dark:text-primary-200/70 text-primary-950/70 mb-4">
+              Commits must follow the <a href="https://www.conventionalcommits.org/"
+                class="text-primary-600 dark:text-primary-400 hover:underline">Conventional Commits</a> specification:
+            </p>
+            <div class="relative bg-primary-900 p-5 rounded-3xl text-sm text-primary-100 group mb-6">
+              <button
+                class="copy-btn absolute top-4 right-4 text-xs transition rounded-full px-3 py-1 bg-white/10 hover:bg-white/20 text-primary-300 flex items-center gap-1.5">
+                <i class="ri-file-copy-line"></i>
+                Copy
+              </button>
+              <pre class="overflow-x-auto"><code>&lt;type&gt;(&lt;scope&gt;?): &lt;short description&gt;</code></pre>
+            </div>
+
+            <ul class="list-disc pl-5 text-sm dark:text-primary-200/60 text-primary-950/60 space-y-2 mb-6">
+              <li>The description must be written in lowercase and in the imperative mood (e.g., <code
+                  class="text-primary-950 dark:text-primary-200 bg-primary-500/10 dark:bg-primary-400/10 px-1.5 py-0.5 rounded text-xs">add</code>,
+                <code
+                  class="text-primary-950 dark:text-primary-200 bg-primary-500/10 dark:bg-primary-400/10 px-1.5 py-0.5 rounded text-xs">fix</code>,
+                <code
+                  class="text-primary-950 dark:text-primary-200 bg-primary-500/10 dark:bg-primary-400/10 px-1.5 py-0.5 rounded text-xs">update</code>,
+                not <code
+                  class="text-primary-950 dark:text-primary-200 bg-primary-500/10 dark:bg-primary-400/10 px-1.5 py-0.5 rounded text-xs">added</code>,
+                <code
+                  class="text-primary-950 dark:text-primary-200 bg-primary-500/10 dark:bg-primary-400/10 px-1.5 py-0.5 rounded text-xs">fixed</code>,
+                <code
+                  class="text-primary-950 dark:text-primary-200 bg-primary-500/10 dark:bg-primary-400/10 px-1.5 py-0.5 rounded text-xs">updated</code>).
+              </li>
+              <li>Keep the subject line under 72 characters.</li>
+              <li>Use the commit body to provide additional context when necessary.</li>
+            </ul>
+
+            <p class="text-base dark:text-primary-200/70 text-primary-950/70 mb-4"><strong>Examples:</strong></p>
+            <div class="relative bg-primary-900 p-5 rounded-3xl text-sm text-primary-100 group mb-4">
+              <button
+                class="copy-btn absolute top-4 right-4 text-xs transition rounded-full px-3 py-1 bg-white/10 hover:bg-white/20 text-primary-300 flex items-center gap-1.5">
+                <i class="ri-file-copy-line"></i>
+                Copy
+              </button>
+              <pre class="overflow-x-auto"><code>feat: add refresh token rotation
+fix(middleware): resolve nil pointer in rate limiter
+docs(readme): update installation instructions</code></pre>
+            </div>
+            <p class="text-base dark:text-primary-200/70 text-primary-950/70">
+              Each commit should represent a single, logical change. Avoid bundling unrelated modifications into a
+              single commit.
+            </p>
+          </div>
+        </div>
+
+        <div class="flex flex-col gap-8">
+          <div>
+            <h2 class="font-medium tracking-tight text-xl sm:text-2xl mb-4 text-primary-950 dark:text-white">4. Pull
+              Requests & Code Review</h2>
+          </div>
+
+          <div>
+            <h3 class="font-semibold text-base text-primary-950 dark:text-white mb-3">4.1 Opening a Pull Request</h3>
+            <p class="text-base dark:text-primary-200/70 text-primary-950/70 mb-4">Before opening a pull request (PR),
+              ensure the following:</p>
+            <ul class="list-disc pl-5 text-sm dark:text-primary-200/60 text-primary-950/60 space-y-2 mb-4">
+              <li>Your branch is up to date with the base branch (<code
+                  class="text-primary-950 dark:text-primary-200 bg-primary-500/10 dark:bg-primary-400/10 px-1.5 py-0.5 rounded text-xs">stable</code>
+                or the relevant release branch).</li>
+              <li>All existing tests pass locally.</li>
+              <li>New functionality is covered by appropriate tests.</li>
+              <li>Your code adheres to the <a href="//developer.octovel.org/standards"
+                  class="text-primary-600 dark:text-primary-400 hover:underline">Developer Standards</a>.</li>
+              <li>The PR is focused on a single concern. If your changes address multiple issues, consider splitting
+                them into separate PRs.</li>
+            </ul>
+            <p class="text-base dark:text-primary-200/70 text-primary-950/70 mb-4">When opening a PR, provide:</p>
+            <ul class="list-disc pl-5 text-sm dark:text-primary-200/60 text-primary-950/60 space-y-2 mb-4">
+              <li><strong>A clear and descriptive title</strong> following the same convention as commit messages.</li>
+              <li><strong>A description</strong> explaining what the PR does, why it is needed, and how it was
+                implemented.</li>
+              <li><strong>A reference to the related issue</strong>, if applicable (e.g., <code
+                  class="text-primary-950 dark:text-primary-200 bg-primary-500/10 dark:bg-primary-400/10 px-1.5 py-0.5 rounded text-xs">Closes #42</code>).
+              </li>
+              <li><strong>Any relevant notes for reviewers</strong>, such as areas requiring particular attention or
+                known limitations.</li>
+            </ul>
+            <p class="text-base dark:text-primary-200/70 text-primary-950/70">
+              Use the pull request template if one is provided in the repository.
+            </p>
+          </div>
+
+          <div>
+            <h3 class="font-semibold text-base text-primary-950 dark:text-white mb-3">4.2 Pull Request Standards</h3>
+            <ul class="list-disc pl-5 text-sm dark:text-primary-200/60 text-primary-950/60 space-y-2">
+              <li>Draft PRs are welcome for work in progress. Mark them as ready for review only when they meet the
+                standards above.</li>
+              <li>Keep PRs reasonably scoped. Large PRs are harder to review and more likely to introduce unintended
+                regressions.</li>
+              <li>Respond to review comments promptly and constructively. If you disagree with a suggestion, explain
+                your reasoning clearly.</li>
+              <li>Do not force-push to a branch once a review is in progress, unless explicitly requested by a reviewer.
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <h3 class="font-semibold text-base text-primary-950 dark:text-white mb-3">4.3 Code Review</h3>
+            <p class="text-base dark:text-primary-200/70 text-primary-950/70 mb-4">
+              All pull requests require at least one approval from a maintainer before being merged. Reviewers are
+              expected to:
+            </p>
+            <ul class="list-disc pl-5 text-sm dark:text-primary-200/60 text-primary-950/60 space-y-2 mb-4">
+              <li>Provide feedback that is specific, objective, and constructive.</li>
+              <li>Distinguish between required changes and optional suggestions.</li>
+              <li>Approve a PR once all required changes have been addressed, without demanding stylistic perfection
+                beyond the established standards.</li>
+            </ul>
+            <p class="text-base dark:text-primary-200/70 text-primary-950/70 mb-4">Contributors are expected to:</p>
+            <ul class="list-disc pl-5 text-sm dark:text-primary-200/60 text-primary-950/60 space-y-2">
+              <li>Address all required change requests before requesting a re-review.</li>
+              <li>Not merge their own PRs unless they are a maintainer and no review is required by policy.</li>
+            </ul>
+          </div>
+
+          <div>
+            <h3 class="font-semibold text-base text-primary-950 dark:text-white mb-3">4.4 Merging</h3>
+            <p class="text-base dark:text-primary-200/70 text-primary-950/70 mb-4">
+              PRs are merged by maintainers. The preferred merge strategy may vary per repository and will be documented
+              in the repository's <code
+                class="text-primary-950 dark:text-primary-200 bg-primary-500/10 dark:bg-primary-400/10 px-1.5 py-0.5 rounded text-xs">README.md</code>
+              or <code
+                class="text-primary-950 dark:text-primary-200 bg-primary-500/10 dark:bg-primary-400/10 px-1.5 py-0.5 rounded text-xs">CONTRIBUTING.md</code>.
+              In general:
+            </p>
+            <ul class="list-disc pl-5 text-sm dark:text-primary-200/60 text-primary-950/60 space-y-2">
+              <li><strong>Squash and merge</strong> is preferred for feature branches to keep the history clean.</li>
+              <li><strong>Merge commits</strong> may be used for significant features or when preserving commit history
+                is valuable.</li>
+              <li><strong>Rebase and merge</strong> may be used at the maintainer's discretion.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="flex flex-col gap-8">
+          <div>
+            <h2 class="font-medium tracking-tight text-xl sm:text-2xl mb-4 text-primary-950 dark:text-white">5.
+              Additional Notes</h2>
+          </div>
+
+          <div>
+            <h3 class="font-semibold text-base text-primary-950 dark:text-white mb-3">Documentation</h3>
+            <p class="text-base dark:text-primary-200/70 text-primary-950/70">
+              Contributions that introduce new functionality must include corresponding documentation updates. This
+              includes inline code comments, API documentation, and any relevant sections in the repository's <code
+                class="text-primary-950 dark:text-primary-200 bg-primary-500/10 dark:bg-primary-400/10 px-1.5 py-0.5 rounded text-xs">README.md</code>.
+            </p>
+          </div>
+
+          <div>
+            <h3 class="font-semibold text-base text-primary-950 dark:text-white mb-3">Tests</h3>
+            <p class="text-base dark:text-primary-200/70 text-primary-950/70">
+              All non-trivial changes are expected to include tests. Contributions that reduce test coverage without
+              justification will not be accepted.
+            </p>
+          </div>
+
+          <div>
+            <h3 class="font-semibold text-base text-primary-950 dark:text-white mb-3">Licensing</h3>
+            <p class="text-base dark:text-primary-200/70 text-primary-950/70">
+              By submitting a contribution, you agree that your work will be licensed under the same license as the
+              repository you are contributing to. Octovel projects are released under open-source licenses. Refer to the
+              <code
+                class="text-primary-950 dark:text-primary-200 bg-primary-500/10 dark:bg-primary-400/10 px-1.5 py-0.5 rounded text-xs">LICENSE</code>
+              file in the relevant repository for details.
+            </p>
+          </div>
+        </div>
+
+        <div>
+          <h2 class="font-medium tracking-tight text-xl sm:text-2xl mb-4 text-primary-950 dark:text-white">Reference
+          </h2>
+          <div class="overflow-x-auto my-6">
+            <table class="w-full text-left border-collapse border border-primary-500/10 dark:border-primary-400/10">
+              <thead>
+                <tr
+                  class="bg-primary-500/5 dark:bg-primary-400/5 border-b border-primary-500/10 dark:border-primary-400/10">
+                  <th class="px-4 py-3 font-medium text-primary-950 dark:text-white text-sm">Resource</th>
+                  <th class="px-4 py-3 font-medium text-primary-950 dark:text-white text-sm">URL</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-primary-500/10 dark:divide-primary-400/10 text-xs sm:text-sm">
+                <tr>
+                  <td class="px-4 py-3 font-medium text-primary-950 dark:text-white text-sm">Community Guidelines</td>
+                  <td class="px-4 py-3 text-sm dark:text-primary-200/70 text-primary-950/70">
+                    <a href="//community.octovel.org/guidelines"
+                      class="text-primary-600 dark:text-primary-400 hover:underline">community.octovel.org/guidelines</a>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3 font-medium text-primary-950 dark:text-white text-sm">Developer Standards</td>
+                  <td class="px-4 py-3 text-sm dark:text-primary-200/70 text-primary-950/70">
+                    <a href="//developer.octovel.org/standards"
+                      class="text-primary-600 dark:text-primary-400 hover:underline">developer.octovel.org/standards</a>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3 font-medium text-primary-950 dark:text-white text-sm">GitHub Organization</td>
+                  <td class="px-4 py-3 text-sm dark:text-primary-200/70 text-primary-950/70">
+                    <a href="https://github.com/octovel"
+                      class="text-primary-600 dark:text-primary-400 hover:underline">github.com/octovel</a>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3 font-medium text-primary-950 dark:text-white text-sm">Discord Server</td>
+                  <td class="px-4 py-3 text-sm dark:text-primary-200/70 text-primary-950/70">Available via invite link
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="text-xs mt-8 dark:text-primary-200/50 text-primary-950/50">
+            <span class="italic">For questions about these
+              guidelines, reach out in the </span>
+            <a href="https://discord.com/channels/1428773355435200676/1428777389453869289"><span
+                class="bg-blue-900 rounded-lg inline-flex px-0.5 py-0.5 text-white"><i
+                  class="ri-hashtag"></i>discussion</span></a>
+            <span class="italic"> channel on Discord or contact a maintainer directly.</span>
+          </p>
+        </div>
+      </div>
+    </div>
+    <footer class="mt-20 pt-8 text-center text-sm dark:text-primary-200/50 text-primary-950/50">
+      <p>© 2026 Octovel. All rights reserved.</p>
+    </footer>
+  </div>
+  </div>
+
+  <script>
+    const header = document.getElementById('main-header');
+    const content = document.getElementById('page-content');
+
+    function updateEffects() {
+      const scrollTop = window.scrollY;
+
+      if (scrollTop > 10) {
+        header.classList.add('bg-primary-50/90', 'dark:bg-primary-950/90', 'py-4');
+        header.classList.remove('py-6', 'sm:py-8');
+      } else {
+        header.classList.remove('bg-primary-50/90', 'dark:bg-primary-950/90', 'py-4');
+        header.classList.add('py-6', 'sm:py-8');
+      }
+
+      const contentTop = content.getBoundingClientRect().top;
+      const dist = -contentTop;
+
+      if (dist > 0) {
+        const fadeHeight = Math.min(40, dist);
+        const mask = `linear-gradient(to bottom, transparent ${dist}px, black ${dist + fadeHeight}px)`;
+        content.style.webkitMaskImage = mask;
+        content.style.maskImage = mask;
+      } else {
+        content.style.webkitMaskImage = 'none';
+        content.style.maskImage = 'none';
+      }
+    }
+
+    window.addEventListener('scroll', updateEffects);
+    window.addEventListener('resize', updateEffects);
+    updateEffects();
+
+    document.querySelectorAll('.copy-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const pre = btn.nextElementSibling;
+        if (pre) {
+          const code = pre.querySelector('code');
+          if (code) {
+            navigator.clipboard.writeText(code.innerText);
+            const originalHTML = btn.innerHTML;
+            btn.innerHTML = '<i class="ri-check-line"></i> Copied';
+            setTimeout(() => {
+              btn.innerHTML = originalHTML;
+            }, 2000);
+          }
+        }
+      });
+    });
+  </script>
+</body>
+
+</html>
